@@ -22,7 +22,8 @@ on:
 jobs:
   build_wheel:
     name: Build the wheel
-    if: github.repository == 'sigstore/sigstore-a2a'
+    # TODO: Change back to 'sigstore/sigstore-a2a' before merging
+    if: github.repository == 'SequeI/sigstore-a2a'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,22 +42,23 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  publish_release_to_pypi:
-    name: Publish release to PyPI
-    needs: [build_wheel]
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/sigstore-a2a
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
-        with:
-          name: dist.zip
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+  # TODO: Uncomment before merging to upstream
+  # publish_release_to_pypi:
+  #   name: Publish release to PyPI
+  #   needs: [build_wheel]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: pypi
+  #     url: https://pypi.org/project/sigstore-a2a
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+  #       with:
+  #         name: dist.zip
+  #         path: dist/
+  #     - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
 
   create_github_release:
     name: Create GitHub Release
@@ -79,7 +81,8 @@ jobs:
 
   build_and_push_container:
     name: Build and Push Docker Image
-    needs: [publish_release_to_pypi]
+    # TODO: Change back to [publish_release_to_pypi] before merging
+    needs: [build_wheel]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -103,7 +106,8 @@ jobs:
         with:
           containerfiles: |
             ./Containerfile
-          image: sigstore/sigstore-a2a
+          # TODO: Change back to sigstore/sigstore-a2a before merging
+          image: sequei/sigstore-a2a
           tags: "latest ${{ github.ref_name }}"
           archs: amd64
           oci: false
@@ -117,6 +121,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@00014ed6ed5efc5b1ab7f7f34a39eb55d41aa4f8 # v3.1.0
         with:
-          subject-name: ghcr.io/sigstore/sigstore-a2a
+          # TODO: Change back to ghcr.io/sigstore/sigstore-a2a before merging
+          subject-name: ghcr.io/sequei/sigstore-a2a
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
